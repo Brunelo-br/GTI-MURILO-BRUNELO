@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Sistema de Gestão — Cadastro e visualização de registros de usuários." />
+  <title>Sistema de Gestão — Cadastro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Prata&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+ 
+  <!-- ── Cabeçalho semântico com <header> e <nav> ── -->
+  <header class="site-header">
+    <div class="container">
+      <h1>Sistema de Gestão</h1>
+      <nav aria-label="Menu principal">
+        <ul class="nav">
+          <li><a href="#cadastro">Cadastro</a></li>
+          <li><a href="#visualizacao">Visualização</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+ 
+  <!-- ── Conteúdo principal: <main> identifica a área central ── -->
+  <main class="container">
+ 
+    <!-- ── <section> agrupa conteúdo temático relacionado ── -->
+    <section id="cadastro" aria-labelledby="cadastro-title">
+      <h2 id="cadastro-title">Cadastro de Usuário</h2>
+ 
+      <!--
+        <form>: elemento semântico de coleta de dados.
+        novalidate: desativa validação nativa para controle via JS
+        com reportValidity(), mantendo feedback acessível.
+      -->
+      <form id="formCadastro" novalidate>
+ 
+        <!--
+          <fieldset> + <legend>: agrupa campos relacionados
+          semanticamente, auxiliando leitores de tela a
+          contextualizar cada grupo de entradas.
+        -->
+        <fieldset>
+          <legend>Dados pessoais</legend>
+          <div class="form-grid">
+ 
+            <div class="form-group">
+              <!-- <label for="..."> vincula explicitamente o rótulo ao controle -->
+              <label for="nome">Nome completo</label>
+              <input
+                id="nome" name="nome" type="text"
+                required aria-required="true"
+                minlength="2"
+                placeholder="Ex.: Maria Silva"
+                autocomplete="name"
+              />
+            </div>
+ 
+            <div class="form-group">
+              <label for="email">E-mail</label>
+              <input
+                id="email" name="email" type="email"
+                required aria-required="true"
+                placeholder="exemplo@empresa.com"
+                autocomplete="email"
+              />
+            </div>
+ 
+            <div class="form-group">
+              <label for="telefone">Telefone</label>
+              <input
+                id="telefone" name="telefone" type="tel"
+                pattern="[0-9\-\s()+]{6,}"
+                placeholder="(11) 91234-5678"
+                autocomplete="tel"
+              />
+            </div>
+ 
+            <div class="form-group">
+              <label for="cargo">Cargo</label>
+              <!-- <select> provê lista de opções semântica e acessível por teclado -->
+              <select id="cargo" name="cargo">
+                <option value="">Selecione um cargo...</option>
+                <option value="Analista">Analista</option>
+                <option value="Gerente">Gerente</option>
+                <option value="Estagiário">Estagiário</option>
+                <option value="Outro">Outro</option>
+              </select>
+            </div>
+ 
+          </div>
+        </fieldset>
+ 
+        <fieldset>
+          <legend>Dados do registro</legend>
+          <div class="form-grid">
+ 
+            <div class="form-group">
+              <label for="data">Data de registro</label>
+              <input id="data" name="data" type="date" required aria-required="true" />
+            </div>
+ 
+            <div class="form-group fullwidth">
+              <label for="observacoes">Observações</label>
+              <!-- <textarea> para texto longo: semântico e redimensionável -->
+              <textarea id="observacoes" name="observacoes" rows="3"
+                placeholder="Informações adicionais sobre o registro..."></textarea>
+            </div>
+ 
+          </div>
+        </fieldset>
+ 
+        <div class="form-actions">
+          <!-- type="submit" e type="reset" têm semântica nativa clara -->
+          <button type="submit">Salvar registro</button>
+          <button type="reset">Limpar campos</button>
+        </div>
+ 
+        <!--
+          role="status" + aria-live="polite": garante que leitores
+          de tela anunciem a mensagem ao usuário sem interromper o fluxo.
+        -->
+        <div id="mensagem" role="status" aria-live="polite" class="sr-only"></div>
+ 
+      </form>
+    </section>
+ 
+    <!-- ── Segunda seção: visualização dos dados ── -->
+    <section id="visualizacao" aria-labelledby="visualizacao-title">
+      <h2 id="visualizacao-title">Visualização de Registros</h2>
+ 
+      <!--
+        aria-live="polite": notifica leitores de tela sobre
+        atualizações dinâmicas na listagem.
+      -->
+      <div class="table-wrap" aria-live="polite">
+ 
+        <!--
+          <table> com <caption>, <thead>, <tbody>:
+          estrutura semântica completa para dados tabulares.
+          scope="col" nos <th> melhora a navegação por teclado/AT.
+        -->
+        <table id="tabelaRegistros">
+          <caption>Lista de registros salvos localmente</caption>
+          <thead>
+            <tr>
+              <th scope="col">Nome</th>
+              <th scope="col">E-mail</th>
+              <th scope="col">Telefone</th>
+              <th scope="col">Cargo</th>
+              <th scope="col">Data</th>
+              <th scope="col">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Linhas inseridas dinamicamente via JavaScript -->
+          </tbody>
+        </table>
+ 
+      </div>
+    </section>
+ 
+  </main>
+ 
+  <!-- ── <footer> identifica o rodapé do documento ── -->
+  <footer class="site-footer">
+    <div class="container">
+      <small>Projeto acadêmico — Interface semântica, responsiva e acessível</small>
+    </div>
+  </footer>
+ 
+  <!-- defer: carrega o script após o HTML, sem bloquear o parser -->
+  <script src="script.js" defer></script>
+</body>
+</html>
+ 
