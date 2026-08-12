@@ -1,0 +1,11 @@
+# VS Code
+.vscode/settings.json
+.vscode/*.log
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Node (caso instale dependências futuras)
+node_modules/
+npm-debug.log*
