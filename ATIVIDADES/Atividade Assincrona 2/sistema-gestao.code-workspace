@@ -1,0 +1,73 @@
+{
+  "folders": [
+    {
+      "name": "Sistema de Gestão",
+      "path": "."
+    }
+  ],
+  "settings": {
+    "editor.fontSize": 14,
+    "editor.tabSize": 2,
+    "editor.formatOnSave": true,
+    "editor.wordWrap": "on",
+    "files.autoSave": "onFocusChange",
+    "editor.minimap.enabled": true,
+    "editor.bracketPairColorization.enabled": true,
+    "editor.guides.bracketPairs": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "[javascript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[html]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[css]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "liveServer.settings.donotShowInfoMsg": true,
+    "liveServer.settings.donotVerifyTags": true,
+    "liveServer.settings.port": 5500,
+    "liveServer.settings.CustomBrowser": "chrome",
+    "workbench.colorTheme": "Dark Modern",
+    "workbench.iconTheme": "vs-seti",
+    "explorer.fileNesting.enabled": true,
+    "explorer.fileNesting.patterns": {
+      "index.html": "styles.css, script.js, validacao.js, cep.js"
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "esbenp.prettier-vscode",
+      "ritwickdey.liveserver",
+      "dbaeumer.vscode-eslint",
+      "ecmel.vscode-html-css",
+      "formulahendry.auto-close-tag",
+      "formulahendry.auto-rename-tag",
+      "christian-kohler.path-intellisense",
+      "naumovs.color-highlight"
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Abrir no navegador (Live Server)",
+        "type": "chrome",
+        "request": "launch",
+        "url": "http://127.0.0.1:5500/index.html",
+        "webRoot": "${workspaceFolder}"
+      }
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Abrir Live Server",
+        "type": "shell",
+        "command": "echo 'Use o botão \"Go Live\" na barra inferior do VS Code'",
+        "problemMatcher": []
+      }
+    ]
+  }
+}
