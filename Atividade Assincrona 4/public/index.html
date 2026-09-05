@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GestorPro — Sistema de Gestão de Produtos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #0f1117;
+            --surface: #181c27;
+            --surface2: #1f2437;
+            --border: #2a3045;
+            --accent: #5b8cff;
+            --accent-soft: rgba(91,140,255,.12);
+            --green: #34d399;
+            --red: #f87171;
+            --yellow: #fbbf24;
+            --text: #e8eaf2;
+            --text-muted: #7a829e;
+            --text-dim: #4a5270;
+            --radius: 10px;
+            --font: 'Inter', sans-serif;
+            --mono: 'JetBrains Mono', monospace;
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── Header ── */
+        header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: -.02em;
+        }
+        .logo-icon {
+            width: 32px; height: 32px;
+            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: .9rem;
+        }
+        .header-tag {
+            font-family: var(--mono);
+            font-size: .7rem;
+            color: var(--text-muted);
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            padding: .2rem .6rem;
+            border-radius: 20px;
+        }
+
+        /* ── Layout ── */
+        main { flex: 1; max-width: 1200px; margin: 0 auto; width: 100%; padding: 2rem; }
+
+        /* ── Toolbar ── */
+        .toolbar {
+            display: flex; gap: 1rem; align-items: center;
+            margin-bottom: 1.5rem; flex-wrap: wrap;
+        }
+        .search-wrap {
+            flex: 1; min-width: 220px; position: relative;
+        }
+        .search-wrap svg {
+            position: absolute; left: .8rem; top: 50%; transform: translateY(-50%);
+            color: var(--text-muted); pointer-events: none;
+        }
+        input[type="text"], input[type="number"], textarea, select {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: var(--radius);
+            font-family: var(--font);
+            font-size: .9rem;
+            outline: none;
+            transition: border-color .15s;
+        }
+        input[type="text"]:focus, input[type="number"]:focus,
+        textarea:focus, select:focus {
+            border-color: var(--accent);
+        }
+        .search-input {
+            width: 100%; padding: .6rem .8rem .6rem 2.4rem;
+        }
+        select { padding: .6rem .8rem; cursor: pointer; }
+        select option { background: var(--surface2); }
+
+        /* ── Buttons ── */
+        .btn {
+            display: inline-flex; align-items: center; gap: .4rem;
+            padding: .6rem 1.1rem; border-radius: var(--radius);
+            font-family: var(--font); font-size: .875rem; font-weight: 500;
+            border: none; cursor: pointer; transition: all .15s; white-space: nowrap;
+        }
+        .btn-primary { background: var(--accent); color: #fff; }
+        .btn-primary:hover { background: #4a7df0; }
+        .btn-ghost { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+        .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+        .btn-danger { background: rgba(248,113,113,.12); color: var(--red); border: 1px solid rgba(248,113,113,.2); }
+        .btn-danger:hover { background: rgba(248,113,113,.2); }
+        .btn-sm { padding: .35rem .7rem; font-size: .8rem; }
+        .btn:disabled { opacity: .5; cursor: not-allowed; }
+
+        /* ── Stats ── */
+        .stats {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1rem; margin-bottom: 1.5rem;
+        }
+        .stat-card {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 1rem 1.2rem;
+        }
+        .stat-label { font-size: .75rem; color: var(--text-muted); margin-bottom: .3rem; }
+        .stat-value { font-size: 1.6rem; font-weight: 700; font-family: var(--mono); }
+        .stat-value.blue { color: var(--accent); }
+        .stat-value.green { color: var(--green); }
+        .stat-value.yellow { color: var(--yellow); }
+
+        /* ── Table ── */
+        .table-wrap {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: var(--radius); overflow: hidden;
+        }
+        table { width: 100%; border-collapse: collapse; }
+        thead { background: var(--surface2); }
+        th {
+            padding: .75rem 1rem; text-align: left;
+            font-size: .75rem; font-weight: 600; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: .05em;
+            border-bottom: 1px solid var(--border);
+        }
+        td {
+            padding: .85rem 1rem; font-size: .875rem;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: rgba(255,255,255,.02); }
+
+        .badge {
+            display: inline-flex; align-items: center; gap: .3rem;
+            padding: .2rem .6rem; border-radius: 20px; font-size: .72rem; font-weight: 500;
+        }
+        .badge-active { background: rgba(52,211,153,.12); color: var(--green); }
+        .badge-inactive { background: rgba(248,113,113,.12); color: var(--red); }
+        .badge-cat { background: var(--accent-soft); color: var(--accent); }
+
+        .price { font-family: var(--mono); font-weight: 600; }
+        .stock-low { color: var(--red); }
+        .stock-ok { color: var(--green); }
+
+        .actions { display: flex; gap: .4rem; }
+
+        /* ── Modal ── */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,.6);
+            backdrop-filter: blur(4px); z-index: 200;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity .2s;
+        }
+        .modal-overlay.open { opacity: 1; pointer-events: all; }
+        .modal {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 14px; width: 100%; max-width: 520px;
+            padding: 1.8rem; transform: translateY(16px); transition: transform .2s;
+            max-height: 90vh; overflow-y: auto;
+        }
+        .modal-overlay.open .modal { transform: translateY(0); }
+        .modal-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 1.4rem;
+        }
+        .modal-title { font-size: 1.05rem; font-weight: 600; }
+        .modal-close {
+            background: var(--surface2); border: 1px solid var(--border);
+            color: var(--text-muted); border-radius: 6px;
+            width: 30px; height: 30px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; font-size: 1rem;
+        }
+        .modal-close:hover { color: var(--text); }
+
+        .form-grid { display: grid; gap: 1rem; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .form-group { display: flex; flex-direction: column; gap: .4rem; }
+        label { font-size: .8rem; font-weight: 500; color: var(--text-muted); }
+        input[type="text"], input[type="number"], textarea, select { width: 100%; padding: .65rem .85rem; }
+        textarea { resize: vertical; min-height: 70px; }
+
+        .form-actions {
+            display: flex; gap: .75rem; justify-content: flex-end; margin-top: 1.2rem;
+        }
+
+        /* ── Toast ── */
+        #toast-container {
+            position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 300;
+            display: flex; flex-direction: column; gap: .5rem;
+        }
+        .toast {
+            background: var(--surface2); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: .75rem 1rem;
+            font-size: .85rem; display: flex; align-items: center; gap: .6rem;
+            animation: slideIn .2s ease; min-width: 250px;
+        }
+        .toast.success { border-left: 3px solid var(--green); }
+        .toast.error { border-left: 3px solid var(--red); }
+        @keyframes slideIn { from { opacity:0; transform:translateX(20px); } to { opacity:1; transform:none; } }
+
+        /* ── Empty / Loading ── */
+        .empty {
+            text-align: center; padding: 3rem 1rem; color: var(--text-muted);
+        }
+        .empty svg { margin-bottom: .8rem; opacity: .3; }
+        .spinner {
+            width: 32px; height: 32px; border: 3px solid var(--border);
+            border-top-color: var(--accent); border-radius: 50%;
+            animation: spin .7s linear infinite; margin: 2rem auto;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── Confirm modal ── */
+        .confirm-body { text-align: center; padding: .5rem 0 1rem; }
+        .confirm-body p { color: var(--text-muted); font-size: .9rem; margin-top: .5rem; }
+        .confirm-name { color: var(--text); font-weight: 600; }
+
+        @media (max-width: 640px) {
+            main { padding: 1rem; }
+            .form-row { grid-template-columns: 1fr; }
+            th:nth-child(3), td:nth-child(3) { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">
+        <div class="logo-icon">📦</div>
+        GestorPro
+    </div>
+    <span class="header-tag">MVC + Supabase CRUD</span>
+</header>
+
+<main>
+    <!-- Stats -->
+    <div class="stats" id="stats">
+        <div class="stat-card">
+            <div class="stat-label">Total de Produtos</div>
+            <div class="stat-value blue" id="stat-total">—</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Em Estoque</div>
+            <div class="stat-value green" id="stat-instock">—</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Estoque Baixo (&lt;5)</div>
+            <div class="stat-value yellow" id="stat-low">—</div>
+        </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+        <div class="search-wrap">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+            </svg>
+            <input class="search-input" type="text" id="search" placeholder="Buscar produto..." />
+        </div>
+        <select id="filter-cat">
+            <option value="">Todas as categorias</option>
+        </select>
+        <button class="btn btn-primary" id="btn-new">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+            Novo Produto
+        </button>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Produto</th>
+                    <th>Categoria</th>
+                    <th>Preço</th>
+                    <th>Estoque</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="table-body">
+                <tr><td colspan="7"><div class="spinner"></div></td></tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<!-- Modal: Form -->
+<div class="modal-overlay" id="modal-form">
+    <div class="modal">
+        <div class="modal-header">
+            <span class="modal-title" id="modal-title">Novo Produto</span>
+            <button class="modal-close" id="btn-close-form">✕</button>
+        </div>
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="f-nome">Nome do Produto *</label>
+                <input type="text" id="f-nome" placeholder="Ex: Notebook Dell Inspiron" />
+            </div>
+            <div class="form-group">
+                <label for="f-descricao">Descrição</label>
+                <textarea id="f-descricao" placeholder="Descrição do produto..."></textarea>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="f-preco">Preço (R$) *</label>
+                    <input type="number" id="f-preco" step="0.01" min="0" placeholder="0,00" />
+                </div>
+                <div class="form-group">
+                    <label for="f-estoque">Qtd. Estoque *</label>
+                    <input type="number" id="f-estoque" min="0" placeholder="0" />
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="f-categoria">Categoria</label>
+                    <select id="f-categoria">
+                        <option value="">Sem categoria</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="f-ativo">Status</label>
+                    <select id="f-ativo">
+                        <option value="true">Ativo</option>
+                        <option value="false">Inativo</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button class="btn btn-ghost" id="btn-cancel-form">Cancelar</button>
+            <button class="btn btn-primary" id="btn-save">Salvar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Confirm Delete -->
+<div class="modal-overlay" id="modal-confirm">
+    <div class="modal" style="max-width:380px">
+        <div class="modal-header">
+            <span class="modal-title">Confirmar exclusão</span>
+            <button class="modal-close" id="btn-close-confirm">✕</button>
+        </div>
+        <div class="confirm-body">
+            <svg width="44" height="44" fill="none" stroke="#f87171" stroke-width="1.5" viewBox="0 0 24 24">
+                <path d="M12 9v4m0 4h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            </svg>
+            <p>Deseja excluir o produto<br/><span class="confirm-name" id="confirm-name"></span>?<br/>Esta ação não pode ser desfeita.</p>
+        </div>
+        <div class="form-actions">
+            <button class="btn btn-ghost" id="btn-cancel-confirm">Cancelar</button>
+            <button class="btn btn-danger" id="btn-confirm-delete">Excluir</button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast container -->
+<div id="toast-container"></div>
+
+<script type="module">
+// ══════════════════════════════════════════════════════════════
+// View Layer (V do MVC)
+// Responsável pela renderização da interface e interação com o usuário.
+// Delega toda lógica de negócio ao Controller.
+// ══════════════════════════════════════════════════════════════
+
+import { ProdutoController } from '../src/controllers/ProdutoController.js';
+
+const controller = new ProdutoController();
+
+// ── State ──────────────────────────────────────────────────────
+let produtos = [];
+let categorias = [];
+let editingId = null;
+let deletingId = null;
+let deleteTimer = null;
+
+// ── DOM refs ──────────────────────────────────────────────────
+const tbody = document.getElementById('table-body');
+const searchInput = document.getElementById('search');
+const filterCat = document.getElementById('filter-cat');
+const modalForm = document.getElementById('modal-form');
+const modalConfirm = document.getElementById('modal-confirm');
+const modalTitle = document.getElementById('modal-title');
+const confirmName = document.getElementById('confirm-name');
+
+// ── Toast ──────────────────────────────────────────────────────
+function toast(msg, type = 'success') {
+    const el = document.createElement('div');
+    el.className = `toast ${type}`;
+    el.innerHTML = `<span>${type === 'success' ? '✓' : '✗'}</span> ${msg}`;
+    document.getElementById('toast-container').appendChild(el);
+    setTimeout(() => el.remove(), 3500);
+}
+
+// ── Modal helpers ──────────────────────────────────────────────
+function openModal(el)  { el.classList.add('open'); }
+function closeModal(el) { el.classList.remove('open'); }
+
+// ── Render stats ───────────────────────────────────────────────
+function renderStats(list) {
+    document.getElementById('stat-total').textContent = list.length;
+    document.getElementById('stat-instock').textContent = list.filter(p => p.quantidade_estoque > 0).length;
+    document.getElementById('stat-low').textContent = list.filter(p => p.quantidade_estoque > 0 && p.quantidade_estoque < 5).length;
+}
+
+// ── Render table ───────────────────────────────────────────────
+function renderTable(list) {
+    renderStats(list);
+
+    const catFilter = filterCat.value;
+    const filtered = catFilter ? list.filter(p => String(p.categoria_id) === catFilter) : list;
+
+    if (!filtered.length) {
+        tbody.innerHTML = `
+            <tr><td colspan="7">
+                <div class="empty">
+                    <svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.2" viewBox="0 0 24 24">
+                        <path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 3H8l-2 4h12l-2-4z"/>
+                    </svg>
+                    <p>Nenhum produto encontrado.</p>
+                </div>
+            </td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = filtered.map(p => {
+        const preco = `R$ ${p.preco.toFixed(2).replace('.', ',')}`;
+        const stockClass = p.quantidade_estoque < 5 ? 'stock-low' : 'stock-ok';
+        const statusBadge = p.ativo
+            ? `<span class="badge badge-active">● Ativo</span>`
+            : `<span class="badge badge-inactive">● Inativo</span>`;
+        const catBadge = p.categoria_nome
+            ? `<span class="badge badge-cat">${p.categoria_nome}</span>`
+            : `<span style="color:var(--text-dim)">—</span>`;
+
+        return `
+        <tr>
+            <td><span style="font-family:var(--mono);color:var(--text-dim)">#${p.id}</span></td>
+            <td>
+                <div style="font-weight:500">${p.nome}</div>
+                ${p.descricao ? `<div style="font-size:.78rem;color:var(--text-muted);margin-top:.2rem">${p.descricao.substring(0,55)}${p.descricao.length>55?'…':''}</div>` : ''}
+            </td>
+            <td>${catBadge}</td>
+            <td><span class="price">${preco}</span></td>
+            <td><span class="${stockClass}" style="font-family:var(--mono);font-weight:500">${p.quantidade_estoque}</span></td>
+            <td>${statusBadge}</td>
+            <td>
+                <div class="actions">
+                    <button class="btn btn-ghost btn-sm" onclick="editProduto(${p.id})">✎ Editar</button>
+                    <button class="btn btn-danger btn-sm" onclick="confirmDelete(${p.id}, '${p.nome.replace(/'/g,"\\'")}')">✕</button>
+                </div>
+            </td>
+        </tr>`;
+    }).join('');
+}
+
+// ── Populate category selects ──────────────────────────────────
+function populateCats(cats) {
+    const opts = cats.map(c => `<option value="${c.id}">${c.nome}</option>`).join('');
+    filterCat.innerHTML = '<option value="">Todas as categorias</option>' + opts;
+    document.getElementById('f-categoria').innerHTML = '<option value="">Sem categoria</option>' + opts;
+}
+
+// ── Load all data ──────────────────────────────────────────────
+async function loadAll(search = '') {
+    tbody.innerHTML = '<tr><td colspan="7"><div class="spinner"></div></td></tr>';
+    try {
+        [produtos, categorias] = await Promise.all([
+            controller.handleRequest('GET_ALL', { search }),
+            controller.handleRequest('GET_CATS')
+        ]);
+        populateCats(categorias);
+        renderTable(produtos);
+    } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="7"><div class="empty"><p style="color:var(--red)">Erro ao carregar dados: ${e.message}</p></div></td></tr>`;
+        toast(e.message, 'error');
+    }
+}
+
+// ── Search debounce ────────────────────────────────────────────
+let searchTimer;
+searchInput.addEventListener('input', () => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => loadAll(searchInput.value), 350);
+});
+filterCat.addEventListener('change', () => renderTable(produtos));
+
+// ── Form: open/close ───────────────────────────────────────────
+document.getElementById('btn-new').addEventListener('click', () => {
+    editingId = null;
+    modalTitle.textContent = 'Novo Produto';
+    ['f-nome','f-descricao','f-preco','f-estoque'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('f-categoria').value = '';
+    document.getElementById('f-ativo').value = 'true';
+    openModal(modalForm);
+});
+
+['btn-close-form','btn-cancel-form'].forEach(id => {
+    document.getElementById(id).addEventListener('click', () => closeModal(modalForm));
+});
+
+// ── Edit produto (exposta globalmente para onclick inline) ─────
+window.editProduto = async (id) => {
+    try {
+        const p = await controller.handleRequest('GET_ONE', { id });
+        editingId = id;
+        modalTitle.textContent = 'Editar Produto';
+        document.getElementById('f-nome').value = p.nome;
+        document.getElementById('f-descricao').value = p.descricao || '';
+        document.getElementById('f-preco').value = p.preco;
+        document.getElementById('f-estoque').value = p.quantidade_estoque;
+        document.getElementById('f-categoria').value = p.categoria_id || '';
+        document.getElementById('f-ativo').value = String(p.ativo);
+        openModal(modalForm);
+    } catch (e) { toast(e.message, 'error'); }
+};
+
+// ── Save (Create / Update) ─────────────────────────────────────
+document.getElementById('btn-save').addEventListener('click', async () => {
+    const btn = document.getElementById('btn-save');
+    const body = {
+        nome: document.getElementById('f-nome').value,
+        descricao: document.getElementById('f-descricao').value,
+        preco: parseFloat(document.getElementById('f-preco').value),
+        quantidade_estoque: parseInt(document.getElementById('f-estoque').value),
+        categoria_id: document.getElementById('f-categoria').value || null,
+        ativo: document.getElementById('f-ativo').value === 'true'
+    };
+
+    btn.disabled = true;
+    btn.textContent = 'Salvando…';
+
+    try {
+        if (editingId) {
+            await controller.handleRequest('PUT', { id: editingId, body });
+            toast('Produto atualizado com sucesso!');
+        } else {
+            await controller.handleRequest('POST', { body });
+            toast('Produto criado com sucesso!');
+        }
+        closeModal(modalForm);
+        await loadAll(searchInput.value);
+    } catch (e) {
+        toast(e.message, 'error');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Salvar';
+    }
+});
+
+// ── Delete confirm ─────────────────────────────────────────────
+window.confirmDelete = (id, nome) => {
+    deletingId = id;
+    confirmName.textContent = nome;
+    openModal(modalConfirm);
+};
+
+['btn-close-confirm','btn-cancel-confirm'].forEach(id => {
+    document.getElementById(id).addEventListener('click', () => closeModal(modalConfirm));
+});
+
+document.getElementById('btn-confirm-delete').addEventListener('click', async () => {
+    const btn = document.getElementById('btn-confirm-delete');
+    btn.disabled = true;
+    try {
+        const res = await controller.handleRequest('DELETE', { id: deletingId });
+        toast(res.message);
+        closeModal(modalConfirm);
+        await loadAll(searchInput.value);
+    } catch (e) {
+        toast(e.message, 'error');
+    } finally {
+        btn.disabled = false;
+    }
+});
+
+// ── Close modal on backdrop click ──────────────────────────────
+[modalForm, modalConfirm].forEach(m => {
+    m.addEventListener('click', e => { if (e.target === m) closeModal(m); });
+});
+
+// ── Bootstrap ──────────────────────────────────────────────────
+loadAll();
+</script>
+</body>
+</html>
